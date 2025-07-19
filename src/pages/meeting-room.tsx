@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { useParams } from 'react-router-dom';
 
-const WEBSOCKET_URL = `ws://${import.meta.env.VITE_API_HOST}/ws`;
+const WEBSOCKET_URL = `wss://${import.meta.env.VITE_API_HOST}/ws`;
 
 export default function MeetingRoom() {
   const { room_code: roomCode } = useParams<{ room_code: string }>();
