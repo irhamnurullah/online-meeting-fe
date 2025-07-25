@@ -12,7 +12,7 @@ api.interceptors.request.use(
     console.log('🚀 Request:', config.method?.toUpperCase(), config.url);
 
     // Ambil token dari localStorage atau state management
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('access_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

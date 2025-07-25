@@ -8,32 +8,28 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import api from '@/config/api';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { AxiosError } from 'axios';
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const navigate = useNavigate();
   const [field, setField] = useState({
+    name: '',
     email: '',
     password: '',
   });
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const response = await api.post('/auth/login', {
-        email: field.email,
-        password: field.password,
-      });
+      const response = await api.post('/auth/register', field);
       if (response.status === 200) {
-        const result = response.data.data;
-        toast.success(response.data.message);
-        const { access_token, id } = result;
-        localStorage.setItem('access_token', access_token);
-        localStorage.setItem('user_id', id);
-        navigate('/dashboard');
+        toast.success('Success Register, please login');
+        navigate('/login');
       }
     } catch (error) {
-      console.error(error);
+      const err = error as AxiosError<{ message: string }>;
+      toast.error(err.response?.data.message);
     }
   };
 
@@ -48,13 +44,17 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-center text-2xl font-semibold">Login Meeting</CardTitle>
+          <CardTitle className="text-center text-2xl font-semibold">Register Meeting</CardTitle>
         </CardHeader>
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleRegister}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
+              <Label htmlFor="email">Name</Label>
+              <Input id="name" name="name" placeholder="Masukkan name" value={field.name} onChange={handleChange} />
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" placeholder="Masukkan email" type="email" value={field.email} onChange={handleChange} />
+              <Input id="email" name="email" placeholder="Masukkan email" value={field.email} onChange={handleChange} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
@@ -62,12 +62,13 @@ export default function LoginPage() {
             </div>
 
             <Button type="submit" className="w-full mt-4">
-              Login
+              Register
             </Button>
+
             <p className="text-sm text-gray-500 mt-2">
-              Don't Have account ?{' '}
-              <Link to="/register" className="text-blue-600 hover:underline">
-                Register Here
+              Have account ?{' '}
+              <Link to="/login" className="text-blue-600 hover:underline">
+                Login Here
               </Link>
             </p>
           </CardContent>

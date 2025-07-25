@@ -6,7 +6,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { useParams } from 'react-router-dom';
 
-const WEBSOCKET_URL = `wss://${import.meta.env.VITE_API_HOST}/ws`;
+const WEBSOCKET_URL_PROD = `wss://${import.meta.env.VITE_API_HOST}/ws`;
+const WEBSOCKET_URL_DEV = `ws://${import.meta.env.VITE_API_HOST}/ws`;
 
 export default function MeetingRoom() {
   const { room_code: roomCode } = useParams<{ room_code: string }>();
@@ -29,7 +30,9 @@ export default function MeetingRoom() {
     peerConnection.current = pc;
 
     const socket = new WebSocket(
-      `${WEBSOCKET_URL}?room_code=${roomCode}&user_id=${localStorage.getItem('user_id')}&token=${localStorage.getItem('access_token')}`
+      `${process.env.NODE_ENV === 'development' ? WEBSOCKET_URL_DEV : WEBSOCKET_URL_PROD}?room_code=${roomCode}&user_id=${localStorage.getItem(
+        'user_id'
+      )}&token=${localStorage.getItem('access_token')}`
     );
     ws.current = socket;
 
@@ -112,7 +115,7 @@ export default function MeetingRoom() {
     if (ws.current && inputMessage.trim()) {
       const messagePayload = {
         type: 'chat',
-        message: `(You): ${inputMessage}`,
+        message: `${inputMessage}`,
       };
       ws.current.send(JSON.stringify(messagePayload));
       setMessages((prev) => [...prev, messagePayload.message]);
